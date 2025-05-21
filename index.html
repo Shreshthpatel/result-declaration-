@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vishal Mega Mart Result Declaration</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+    }
+
+    .header {
+      background-color: #e31188;
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+    }
+
+    .header img {
+      height: 40px;
+      margin-right: 15px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #fdfcfd;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .scrolling-bar {
+      background-color: #007bff;
+      color: white;
+      height: 40px;
+      position: relative;
+      font-weight: bold;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .scrolling-bar p {
+      white-space: nowrap;
+      position: absolute;
+      animation: scroll-left 10s linear infinite;
+      margin: 0;
+    }
+
+    @keyframes scroll-left {
+      from { left: 100%; }
+      to { left: -100%; }
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    input {
+      width: 95%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #d6006c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .result-info {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .result-image {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
+
+    #popup img {
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    #popup p {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pink Bar with Logo -->
+  <div class="header">
+    <img src="logo.png" alt="Logo" />
+    <h1>Vishal Mega Mart Result Declaration</h1>
+  </div>
+
+  <!-- Blue Scrolling Bar -->
+  <div class="scrolling-bar">
+    <p>Results are out! Check your result now 🎉</p>
+  </div>
+
+  <!-- Form Container -->
+  <div class="container" id="form-container">
+    <h2>Enter Your Details</h2>
+    <label for="name">Candidate Name:</label>
+    <input type="text" id="name" required>
+
+    <label for="mother">Mother's Name:</label>
+    <input type="text" id="mother" required>
+
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" required>
+
+    <button onclick="showResult()">Submit</button>
+  </div>
+
+  <!-- Result Container -->
+  <div class="container" id="result-container" style="display:none;">
+    <h2>Result Details</h2>
+    <div class="result-info" id="result-details"></div>
+    <img id="random-result-image" class="result-image" src="" alt="Result Image">
+    <button onclick="downloadResult()">Download Result</button>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <p>✅ Image Downloaded Successfully!<br>Sharing result on Instagram?<br>Tag us <strong>@shresthpatel95</strong></p>
+    <img id="popup-img" src="" alt="Downloaded Image Preview">
+  </div>
+
+  <script>
+    function showResult() {
+      const name = document.getElementById("name").value.trim();
+      const mother = document.getElementById("mother").value.trim();
+      const dob = document.getElementById("dob").value;
+
+      if (!name || !mother || !dob) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * 10) + 1;
+      const resultImg = `r${randomIndex}.png`;
+      document.getElementById("random-result-image").src = resultImg;
+
+      const resultDetails = `
+        <p><strong>Candidate Name:</strong> ${name}</p>
+        <p><strong>Mother's Name:</strong> ${mother}</p>
+        <p><strong>Date of Birth:</strong> ${dob}</p>
+      `;
+      document.getElementById("result-details").innerHTML = resultDetails;
+
+      document.getElementById("form-container").style.display = "none";
+      document.getElementById("result-container").style.display = "block";
+    }
+
+    function downloadResult() {
+      const resultContainer = document.getElementById("result-container");
+      html2canvas(resultContainer).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "result.png";
+        link.href = canvas.toDataURL();
+        link.click();
+
+        // Show popup with image
+        document.getElementById("popup-img").src = canvas.toDataURL();
+        document.getElementById("popup").style.display = "block";
+
+        // Auto close popup after 5 seconds
+        setTimeout(() => {
+          document.getElementById("popup").style.display = "none";
+        }, 5000);
+      });
+    }
+  </script>
+
+</body>
+</html>

